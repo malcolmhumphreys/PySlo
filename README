@@ -1,0 +1,11 @@
+=PySlo=
+PySlo is a python binding to the renderman slo interface for interrogation
+compiled RSL shaders.
+
+It has currently only been tested with 3Delight
+
+=Usage=
+import PySlo
+PySlo.setShader("test.sdl")
+print PySlo.getMethodNames()
+PySlo.endShader()
