@@ -6,6 +6,6 @@ It has currently only been tested with 3Delight
 
 =Usage=
 import PySlo
-PySlo.setShader("test.sdl")
+PySlo.setShader("test")
 print PySlo.getMethodNames()
 PySlo.endShader()
