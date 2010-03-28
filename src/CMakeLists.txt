@@ -39,6 +39,7 @@ target_link_libraries (PySlo
 set_target_properties (PySlo PROPERTIES
                        OUTPUT_NAME PySlo
                        PREFIX ""
-                       SUFFIX ".so")
+                       SUFFIX ".so"
+                       COMPILE_FLAGS ${${RMAN}_COMPILE_FLAGS})
 
 install (TARGETS PySlo DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/python)
