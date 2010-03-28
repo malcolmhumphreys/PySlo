@@ -66,7 +66,7 @@ PyGetArgDefault(SLO_VISSYMDEF *param_ptr, list out) {
             out.append(param_ptr->svd_default.scalarval[0]);
             break;
         case SLO_TYPE_STRING:
-            out.append(param_ptr->svd_default.stringval);
+            out.append( std::string( param_ptr->svd_default.stringval ) );
             break;
         case SLO_TYPE_MATRIX:
             for(unsigned m = 0; m < 16; ++m)
@@ -93,11 +93,11 @@ PyConvertVISSYMDEF(SLO_VISSYMDEF *param_ptr, dict out) {
     if (param_ptr == NULL) return;
     
     // straight copy
-    out["name"] = param_ptr->svd_name;
+    out["name"] = std::string( param_ptr->svd_name );
     out["type"] = param_ptr->svd_type;
     out["storage"] = param_ptr->svd_storage;
     out["detail"] = param_ptr->svd_detail;
-    out["spacename"] = param_ptr->svd_spacename;
+    out["spacename"] = std::string( param_ptr->svd_spacename );
     out["valisvalid"] = param_ptr->svd_valisvalid;
     out["arraylen"] = param_ptr->svd_arraylen;
     
@@ -123,7 +123,7 @@ PyGetArgById(int i_id) {
 }
 
 dict
-PyGetArgByName(const char *i_name) {
+PyGetArgByName(char *i_name) {
     
     dict arg;
     SLO_VISSYMDEF* param_ptr = Slo_GetArgByName(i_name);
@@ -143,7 +143,7 @@ PyGetArrayArgElementById(int i_id, int i_index) {
 }
 
 dict
-PyGetArrayArgElementByName(const char *i_name, int i_index) {
+PyGetArrayArgElementByName(char *i_name, int i_index) {
     
     dict arg;
     SLO_VISSYMDEF* param_ptr = Slo_GetArgByName(i_name);
@@ -159,6 +159,22 @@ PyIsArray(int i_id) {
     return (param_ptr->svd_arraylen > 0 || param_ptr->svd_default.scalarval == 0x0);
 }
 
+// wrappers for Slo_*toStr() methods because prman's Slo interface 
+// returns non-const char *
+std::string PySloTypeToStr( SLO_TYPE i_type )
+{
+    return std::string( Slo_TypetoStr( i_type ) );
+}
+
+std::string PySloStorToStr( SLO_STORAGE i_storage )
+{
+    return std::string( Slo_StortoStr( i_storage ) );
+}
+std::string PySloDetailToStr( SLO_DETAIL i_detail )
+{
+    return std::string( Slo_DetailtoStr( i_detail ) );
+}
+
 BOOST_PYTHON_MODULE(PySlo)
 {
     
@@ -172,7 +188,9 @@ BOOST_PYTHON_MODULE(PySlo)
         .value("light", SLO_TYPE_LIGHT)
         .value("displacement", SLO_TYPE_DISPLACEMENT)
         .value("volume", SLO_TYPE_VOLUME)
+#ifdef DELIGHT
         .value("transformation", SLO_TYPE_TRANSFORMATION)
+#endif
         .value("imager", SLO_TYPE_IMAGER)
         .value("vector", SLO_TYPE_VECTOR)
         .value("normal", SLO_TYPE_NORMAL)
@@ -196,24 +214,30 @@ BOOST_PYTHON_MODULE(PySlo)
         .value("uniform", SLO_DETAIL_UNIFORM)
         .export_values();
     
-    def("setPath", Slo_SetPath);
-    def("setShader", Slo_SetShader);
-    def("getName", Slo_GetName);
-    def("getType", Slo_GetType);
-    def("hasMethod", Slo_HasMethod);
-    def("getMethodNames", PyGetMethodNames);
-    def("getNArgs", Slo_GetNArgs);
-    def("getArgById", PyGetArgById);
-    def("getArgByName", PyGetArgByName);
-    def("getArrayArgElementById", PyGetArrayArgElementById);
-    def("getArrayArgElementByName", PyGetArrayArgElementByName);
-    def("getNAnnotations", Slo_GetNAnnotations);
-    def("getAnnotationKeyById", Slo_GetAnnotationKeyById);
-    def("getAnnotationByKey", Slo_GetAnnotationByKey);
-    def("endShader", Slo_EndShader);
-    def("typetoStr", Slo_TypetoStr);
-    def("stortoStr", Slo_StortoStr);
-    def("detailtoStr", Slo_DetailtoStr);
+     def("setPath", Slo_SetPath);
+     def("setShader", Slo_SetShader);
+     def("getName", Slo_GetName);
+     def("getType", Slo_GetType);
+     def("hasMethod", Slo_HasMethod);
+     def("getMethodNames", PyGetMethodNames);
+     def("getNArgs", Slo_GetNArgs);
+     def("getArgById", PyGetArgById);
+     def("getArgByName", PyGetArgByName);
+     def("getArrayArgElementById", PyGetArrayArgElementById);
+     def("getArrayArgElementByName", PyGetArrayArgElementByName);
+     def("typetoStr", PySloTypeToStr);
+     def("stortoStr", PySloStorToStr);
+     def("detailtoStr", PySloDetailToStr);
+     def("endShader", Slo_EndShader);
+#ifdef DELIGHT
+     def("getNAnnotations", Slo_GetNAnnotations);
+     def("getAnnotationKeyById", Slo_GetAnnotationKeyById);
+     def("getAnnotationByKey", Slo_GetAnnotationByKey);
+#endif
+#ifdef PRMAN
+     // def("getMetaData", Slo_GetMetaData ); // TODO
+     // def("getAllMetaData", Slo_GetAllMetaData ); // TODO
+#endif
     
     // custom
     def("isArray", PyIsArray);
