@@ -41,17 +41,19 @@ list
 PyGetMethodNames() {
     
     list methods;
-#ifndef AQSIS
     const char* const* ptr = Slo_GetMethodNames();
-    for (; *ptr != '\0'; ptr++)
-        methods.append(*ptr);
-#endif // AQSIS
+    if(ptr != NULL) {
+        for (; *ptr != '\0'; ptr++)
+            methods.append(*ptr);
+    }
     
     return methods;
 }
 
 void
 PyGetArgDefault(SLO_VISSYMDEF *param_ptr, list out) {
+    
+    if (param_ptr == NULL) return;
     
     list tmp;
     switch (param_ptr->svd_type) {
@@ -68,7 +70,7 @@ PyGetArgDefault(SLO_VISSYMDEF *param_ptr, list out) {
             out.append(param_ptr->svd_default.scalarval[0]);
             break;
         case SLO_TYPE_STRING:
-            out.append( std::string( param_ptr->svd_default.stringval ) );
+            out.append(std::string(param_ptr->svd_default.stringval));
             break;
         case SLO_TYPE_MATRIX:
             for(unsigned m = 0; m < 16; ++m)
@@ -82,6 +84,8 @@ PyGetArgDefault(SLO_VISSYMDEF *param_ptr, list out) {
 
 void
 PyGetArrayArgDefault(SLO_VISSYMDEF *param_ptr, list out) {
+    
+    if (param_ptr == NULL) return;
     
     for (int i = 0; i < param_ptr->svd_arraylen; i++) 
         PyGetArgDefault (Slo_GetArrayArgElement (param_ptr, i), out);
@@ -100,9 +104,7 @@ PyConvertVISSYMDEF(SLO_VISSYMDEF *param_ptr, dict out) {
     out["storage"] = param_ptr->svd_storage;
     out["detail"] = param_ptr->svd_detail;
     out["spacename"] = std::string( param_ptr->svd_spacename );
-#ifndef AQSIS
     out["valisvalid"] = param_ptr->svd_valisvalid;
-#endif // AQSIS
     out["arraylen"] = param_ptr->svd_arraylen;
     
     // get the default value
@@ -165,18 +167,16 @@ PyIsArray(int i_id) {
 
 // wrappers for Slo_*toStr() methods because prman's Slo interface 
 // returns non-const char *
-std::string PySloTypeToStr( SLO_TYPE i_type )
-{
-    return std::string( Slo_TypetoStr( i_type ) );
+std::string PySloTypeToStr(SLO_TYPE i_type) {
+    return std::string(Slo_TypetoStr(i_type));
 }
 
-std::string PySloStorToStr( SLO_STORAGE i_storage )
-{
-    return std::string( Slo_StortoStr( i_storage ) );
+std::string PySloStorToStr(SLO_STORAGE i_storage) {
+    return std::string(Slo_StortoStr(i_storage));
 }
-std::string PySloDetailToStr( SLO_DETAIL i_detail )
-{
-    return std::string( Slo_DetailtoStr( i_detail ) );
+
+std::string PySloDetailToStr(SLO_DETAIL i_detail) {
+    return std::string(Slo_DetailtoStr(i_detail));
 }
 
 BOOST_PYTHON_MODULE(PySlo)
@@ -192,16 +192,14 @@ BOOST_PYTHON_MODULE(PySlo)
         .value("light", SLO_TYPE_LIGHT)
         .value("displacement", SLO_TYPE_DISPLACEMENT)
         .value("volume", SLO_TYPE_VOLUME)
-#ifdef DELIGHT
+#ifndef PRMAN
         .value("transformation", SLO_TYPE_TRANSFORMATION)
-#endif // DELIGHT
+#endif // PRMAN
         .value("imager", SLO_TYPE_IMAGER)
         .value("vector", SLO_TYPE_VECTOR)
         .value("normal", SLO_TYPE_NORMAL)
         .value("matrix", SLO_TYPE_MATRIX)
-#ifndef AQSIS
         .value("shader", SLO_TYPE_SHADER)
-#endif
         .export_values();
         
     enum_<SLO_STORAGE>("storage")
@@ -210,9 +208,7 @@ BOOST_PYTHON_MODULE(PySlo)
         .value("variable", SLO_STOR_VARIABLE)
         .value("temporary", SLO_STOR_TEMPORARY)
         .value("parameter", SLO_STOR_PARAMETER)
-#ifndef AQSIS
         .value("outputparameter", SLO_STOR_OUTPUTPARAMETER)
-#endif // AQSIS
         .value("gstate", SLO_STOR_GSTATE)
         .export_values();
     
@@ -224,16 +220,10 @@ BOOST_PYTHON_MODULE(PySlo)
     
      def("setPath", Slo_SetPath);
      def("setShader", Slo_SetShader);
-//#ifndef AQSIS
-     // TODO: work out why Aqsis.Slo_GetName() doesn't work with boost python
-     // changed char* Slo_GetName ( void ) to const char* Slo_GetName ( void )
      def("getName", Slo_GetName);
-//#endif // AQSIS
      def("getType", Slo_GetType);
-#ifndef AQSIS
      def("hasMethod", Slo_HasMethod);
      def("getMethodNames", PyGetMethodNames);
-#endif // AQSIS
      def("getNArgs", Slo_GetNArgs);
      def("getArgById", PyGetArgById);
      def("getArgByName", PyGetArgByName);
