@@ -10,3 +10,4 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/share/cmake")
 
 add_subdirectory (src)
 
+install(DIRECTORY lib/ DESTINATION lib)

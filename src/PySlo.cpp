@@ -35,6 +35,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <iostream>
 #include <slo.h>
 
+#define PYSLO_MODULE_NAME Delight
+
 using namespace boost::python;
 
 list
@@ -179,7 +181,15 @@ std::string PySloDetailToStr(SLO_DETAIL i_detail) {
     return std::string(Slo_DetailtoStr(i_detail));
 }
 
-BOOST_PYTHON_MODULE(PySlo)
+#ifdef PRMAN
+BOOST_PYTHON_MODULE(__PRman__)
+#endif // PRMAN
+#ifdef DELIGHT
+BOOST_PYTHON_MODULE(__Delight__)
+#endif // DELIGHT
+#ifdef AQSIS
+BOOST_PYTHON_MODULE(__Aqsis__)
+#endif // AQSIS
 {
     
     enum_<SLO_TYPE>("type")
