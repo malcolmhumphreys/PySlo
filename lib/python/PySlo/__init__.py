@@ -31,7 +31,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import os.path
 
 __binding__ = None
-__binding_type__ = None
 __searchpath__ = None
 __loaded_shader__ = None
 __rman_map__ = {"PRman": ".slo", "Delight": ".sdl", "Aqsis": ".slx"}
@@ -71,7 +70,7 @@ def setShader(shader = None):
   # load the shader
   if __searchpath__ != None:
     __binding__.setPath(__searchpath__)
-  __loaded_shader__ = __binding__.setShader(shader)
+  __loaded_shader__ = __binding__.setShader(basename)
   if __loaded_shader__ == 1:
     raise Exception('could not load/find shader %s' % shader)
 
