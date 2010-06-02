@@ -35,8 +35,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <iostream>
 #include <slo.h>
 
-#define PYSLO_MODULE_NAME Delight
-
 using namespace boost::python;
 
 list
@@ -160,6 +158,23 @@ PyGetArrayArgElementByName(char *i_name, int i_index) {
     return arg;
 }
 
+// wrappers for Slo_*toStr() methods because prman's Slo interface 
+// returns non-const char *
+std::string
+PySloTypeToStr(SLO_TYPE i_type) {
+    return std::string(Slo_TypetoStr(i_type));
+}
+
+std::string
+PySloStorToStr(SLO_STORAGE i_storage) {
+    return std::string(Slo_StortoStr(i_storage));
+}
+
+std::string
+PySloDetailToStr(SLO_DETAIL i_detail) {
+    return std::string(Slo_DetailtoStr(i_detail));
+}
+
 bool
 PyIsArray(int i_id) {
     SLO_VISSYMDEF* param_ptr = Slo_GetArgById(i_id);
@@ -167,29 +182,28 @@ PyIsArray(int i_id) {
     return (param_ptr->svd_arraylen > 0 || param_ptr->svd_default.scalarval == 0x0);
 }
 
-// wrappers for Slo_*toStr() methods because prman's Slo interface 
-// returns non-const char *
-std::string PySloTypeToStr(SLO_TYPE i_type) {
-    return std::string(Slo_TypetoStr(i_type));
-}
-
-std::string PySloStorToStr(SLO_STORAGE i_storage) {
-    return std::string(Slo_StortoStr(i_storage));
-}
-
-std::string PySloDetailToStr(SLO_DETAIL i_detail) {
-    return std::string(Slo_DetailtoStr(i_detail));
+std::string
+PyRmanType() {
+  #ifdef PRMAN
+  return std::string("PRman");
+  #elif DELIGHT
+  return std::string("Delight");
+  #elif AQSIS
+  return std::string("Aqsis");
+  #else
+  return std::string("Unknown");
+  #endif
 }
 
 #ifdef PRMAN
 BOOST_PYTHON_MODULE(__PRman__)
-#endif // PRMAN
-#ifdef DELIGHT
+#elif DELIGHT
 BOOST_PYTHON_MODULE(__Delight__)
-#endif // DELIGHT
-#ifdef AQSIS
+#elif AQSIS
 BOOST_PYTHON_MODULE(__Aqsis__)
-#endif // AQSIS
+#else
+BOOST_PYTHON_MODULE(__Unknown__)
+#endif
 {
     
     enum_<SLO_TYPE>("type")
@@ -255,5 +269,6 @@ BOOST_PYTHON_MODULE(__Aqsis__)
     
     // custom
     def("isArray", PyIsArray);
+    def("rmanType", PyRmanType);
     
 }

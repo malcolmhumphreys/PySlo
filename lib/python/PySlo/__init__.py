@@ -28,9 +28,13 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
+import os.path
+
 __binding__ = None
+__binding_type__ = None
 __searchpath__ = None
 __loaded_shader__ = None
+__rman_map__ = {"PRman": ".slo", "Delight": ".sdl", "Aqsis": ".slx"}
 
 # enums
 type = None
@@ -42,16 +46,29 @@ def setPath(searchpath = ".:&"):
   __searchpath__ = searchpath
 
 def setShader(shader = None):
-  global __binding__, __searchpath__, __loaded_shader__, type, storage, detail
+  global __binding__, __searchpath__, __loaded_shader__, __rman_map__, type, storage, detail
+  # get the extension of the shader
+  basename, ext = os.path.splitext(str(shader))
+  # unload current binding if it does not match shader type
+  if __binding__ != None:
+    if __rman_map__[__binding__.rmanType()] != ext:
+      del __binding__
+      __binding__ = None
+  # load binding if we haven't allready
   if __binding__ == None:
-    #if ext prman
-    #if ext sdl
-    import __Delight__ as __binding__
-    #if ext aqsis
+    if ext == __rman_map__["PRman"]:
+      import __PRman__ as __binding__
+    elif ext == __rman_map__["Delight"]:
+      import __Delight__ as __binding__
+    elif ext == __rman_map__["Aqsis"]:
+      import __Aqsis__ as __binding__
+    else:
+      raise Exception('unsupported shader type %s' % ext)
     # update the enum pointers
     type    = __binding__.type
     storage = __binding__.storage
     detail  = __binding__.detail
+  # load the shader
   if __searchpath__ != None:
     __binding__.setPath(__searchpath__)
   __loaded_shader__ = __binding__.setShader(shader)
