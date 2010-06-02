@@ -56,11 +56,20 @@ def setShader(shader = None):
   # load binding if we haven't allready
   if __binding__ == None:
     if ext == __rman_map__["PRman"]:
-      import __PRman__ as __binding__
+      try:
+        import __PRman__ as __binding__
+      except ImportError:
+        raise Exception('binding for %s not compiled' % 'PRMan')
     elif ext == __rman_map__["Delight"]:
-      import __Delight__ as __binding__
+      try:
+        import __Delight__ as __binding__
+      except ImportError:
+        raise Exception('binding for %s not compiled' % 'Delight')
     elif ext == __rman_map__["Aqsis"]:
-      import __Aqsis__ as __binding__
+      try:
+        import __Aqsis__ as __binding__
+      except ImportError:
+        raise Exception('binding for %s not compiled' % 'Aqsis')
     else:
       raise Exception('unsupported shader type %s' % ext)
     # update the enum pointers
