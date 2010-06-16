@@ -50,6 +50,21 @@ PyGetMethodNames() {
     return methods;
 }
 
+list
+PyGetPluginNames() {
+    
+    list plugins;
+#ifdef PRMAN
+    const char* const* ptr = Slo_GetPlugins();
+    if(ptr != NULL) {
+        for (; *ptr != '\0'; ptr++)
+            plugins.append(*ptr);
+    }
+#endif
+    
+    return plugins;
+}
+
 void
 PyGetArgDefault(SLO_VISSYMDEF *param_ptr, list out) {
     
@@ -185,7 +200,7 @@ PyIsArray(int i_id) {
 std::string
 PyRmanType() {
   #ifdef PRMAN
-  return std::string("PRman");
+  return std::string("PRMan");
   #elif DELIGHT
   return std::string("Delight");
   #elif AQSIS
@@ -196,7 +211,7 @@ PyRmanType() {
 }
 
 #ifdef PRMAN
-BOOST_PYTHON_MODULE(__PRman__)
+BOOST_PYTHON_MODULE(__PRMan__)
 #elif DELIGHT
 BOOST_PYTHON_MODULE(__Delight__)
 #elif AQSIS
@@ -248,6 +263,7 @@ BOOST_PYTHON_MODULE(__Unknown__)
      def("getType", Slo_GetType);
      def("hasMethod", Slo_HasMethod);
      def("getMethodNames", PyGetMethodNames);
+	 def("getPluginsNames", PyGetPluginNames);
      def("getNArgs", Slo_GetNArgs);
      def("getArgById", PyGetArgById);
      def("getArgByName", PyGetArgByName);
