@@ -1,5 +1,5 @@
 
-export PYTHONPATH="/Users/malcolm/Documents/dev/pyslo/build/dist/lib/python"
+export PYTHONPATH="/Users/malcolm/Sites/opensource/PySlo/dist/lib/python"
 
 shaderdl --embed-source test_rsl1.sl
 shaderdl --embed-source test_rsl2.sl

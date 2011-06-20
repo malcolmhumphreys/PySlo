@@ -33,19 +33,24 @@ import os.path
 __binding__ = None
 __searchpath__ = None
 __loaded_shader__ = None
-__rman_map__ = {"PRman": ".slo", "Delight": ".sdl", "Aqsis": ".slx"}
+__rman_map__ = {"PRMan": ".slo", "Delight": ".sdl", "Aqsis": ".slx"}
 
-# enums
-type = None
-storage = None
-detail = None
+# enum
+TYPE = None
+STORAGE = None
+DETAIL = None
 
 def setPath(searchpath = ".:&"):
   global __searchpath__
   __searchpath__ = searchpath
 
+def getPath():
+  global __searchpath__
+  return __searchpath__
+
 def setShader(shader = None):
-  global __binding__, __searchpath__, __loaded_shader__, __rman_map__, type, storage, detail
+  global __binding__, __searchpath__, __loaded_shader__, __rman_map__
+  global TYPE, STORAGE, DETAIL
   # get the extension of the shader
   basename, ext = os.path.splitext(str(shader))
   # unload current binding if it does not match shader type
@@ -55,9 +60,9 @@ def setShader(shader = None):
       __binding__ = None
   # load binding if we haven't allready
   if __binding__ == None:
-    if ext == __rman_map__["PRman"]:
+    if ext == __rman_map__["PRMan"]:
       try:
-        import __PRman__ as __binding__
+        import __PRMan__ as __binding__
       except ImportError:
         raise Exception('binding for %s not compiled' % 'PRMan')
     elif ext == __rman_map__["Delight"]:
@@ -73,9 +78,9 @@ def setShader(shader = None):
     else:
       raise Exception('unsupported shader type %s' % ext)
     # update the enum pointers
-    type    = __binding__.type
-    storage = __binding__.storage
-    detail  = __binding__.detail
+    TYPE    = __binding__.TYPE
+    STORAGE = __binding__.STORAGE
+    DETAIL  = __binding__.DETAIL
   # load the shader
   if __searchpath__ != None:
     __binding__.setPath(__searchpath__)
@@ -128,15 +133,6 @@ def getArrayArgElementByName(name = ""):
     raise Exception('you need call setShader() before getArrayArgElementByName()')
   return __binding__.getArrayArgElementByName(name)
 
-def typetoStr(type = None):
-  return __binding__.typetoStr(type)
-
-def stortoStr(storage = None):
-  return __binding__.stortoStr(storage)
-
-def detailtoStr(detail = None):
-  return __binding__.detailtoStr(detail)
-
 def endShader():
   global __binding__, __loaded_shader__
   if __binding__ == None:
@@ -145,17 +141,57 @@ def endShader():
   __binding__ = None
   __loaded_shader__ = None
 
-"""
-#ifdef DELIGHT
- def("getNAnnotations", Slo_GetNAnnotations);
- def("getAnnotationKeyById", Slo_GetAnnotationKeyById);
- def("getAnnotationByKey", Slo_GetAnnotationByKey);
-#endif // DELIGHT
-#ifdef PRMAN
- // def("getMetaData", Slo_GetMetaData ); // TODO
- // def("getAllMetaData", Slo_GetAllMetaData ); // TODO
-#endif // PRMAN
-"""
+def typetoStr(type = None):
+  if __binding__ == None:
+    raise Exception('you need call setShader() before typetoStr()')
+  return __binding__.typetoStr(type)
+
+def stortoStr(storage = None):
+  if __binding__ == None:
+    raise Exception('you need call setShader() before stortoStr()')
+  return __binding__.stortoStr(storage)
+
+def detailtoStr(detail = None):
+  if __binding__ == None:
+    raise Exception('you need call setShader() before detailtoStr()')
+  return __binding__.detailtoStr(detail)
+
+def getMetaData(name = None):
+  if __binding__ == None:
+    raise Exception('you need call setShader() before getMetaData()')
+  return __binding__.getMetaData(name)
+
+def getAllMetaData():
+  if __binding__ == None:
+    raise Exception('you need call setShader() before getAllMetaData()')
+  return __binding__.getAllMetaData()
+
+def getNAnnotations():
+  if __binding__ == None:
+    raise Exception('you need call setShader() before getNAnnotations()')
+  return __binding__.getNAnnotations()
+
+def getAnnotationKeyById(id = 0):
+  if __binding__ == None:
+    raise Exception('you need call setShader() before getAnnotationKeyById()')
+  return __binding__.getAnnotationKeyById(id)
+
+def getAnnotationByKey(key = None):
+  if __binding__ == None:
+    raise Exception('you need call setShader() before getAnnotationByKey()')
+  return __binding__.getAnnotationByKey(key)
+
+def getPluginsNames():
+  if __binding__ == None:
+    raise Exception('you need call setShader() before getPluginsNames()')
+  return __binding__.getPluginsNames()
 
 def isArray(id = 0):
+  if __binding__ == None:
+    raise Exception('you need call setShader() before isArray()')
   return __binding__.isArray(id)
+
+def rmanType():
+  if __binding__ == None:
+    return "Unknown"
+  return __binding__.rmanType()
