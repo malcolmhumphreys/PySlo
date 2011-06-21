@@ -58,14 +58,12 @@
 # our includes
 FIND_PATH( PRMan_INCLUDE_DIR ri.h
   $ENV{RMANTREE}/include
-  ${PRMan_INSTALL_PATH}/include
-  )
+  ${PRMan_INSTALL_PATH}/include )
 
 # our library itself
 FIND_LIBRARY( PRMan_LIBRARIES prman
   $ENV{RMANTREE}/lib
-  ${PRMan_INSTALL_PATH}/lib
-  )
+  ${PRMan_INSTALL_PATH}/lib )
 
 # our compilation flags
 SET( PRMan_COMPILE_FLAGS "-DPRMAN -fPIC" )
@@ -74,5 +72,13 @@ SET( PRMan_COMPILE_FLAGS "-DPRMAN -fPIC" )
 INCLUDE( FindPackageHandleStandardArgs )
 FIND_PACKAGE_HANDLE_STANDARD_ARGS( "PRMan" DEFAULT_MSG
   PRMan_INCLUDE_DIR
-  PRMan_LIBRARIES
-  )
+  PRMan_LIBRARIES )
+
+SET( PRMan_VERSION "" )
+IF( PRMAN_FOUND )
+  TRY_RUN(PRMAN_VERSION_EXITCODE PRMAN_VERSION_COMPILED
+    ${CMAKE_BINARY_DIR} ${CMAKE_MODULE_PATH}/TestForRmanVersion.cxx
+    RUN_OUTPUT_VARIABLE PRMan_VERSION
+    ARGS ${PRMan_LIBRARIES})
+  message(STATUS "PRMan Version: ${PRMan_VERSION}")
+ENDIF()

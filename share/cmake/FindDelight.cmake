@@ -58,8 +58,7 @@
 # our includes
 FIND_PATH( Delight_INCLUDE_DIR ri.h
   $ENV{DELIGHT}/include
-  ${Delight_INSTALL_PATH}/include
-  )
+  ${Delight_INSTALL_PATH}/include )
 
 # our compilation flags
 SET( Delight_COMPILE_FLAGS "-DDELIGHT" )
@@ -67,8 +66,7 @@ SET( Delight_COMPILE_FLAGS "-DDELIGHT" )
 # our library itself
 FIND_LIBRARY( Delight_LIBRARIES 3delight
   $ENV{DELIGHT}/lib
-  ${Delight_INSTALL_PATH}/lib
-  )
+  ${Delight_INSTALL_PATH}/lib )
 
 # our library path
 GET_FILENAME_COMPONENT( Delight_LIBRARY_DIR ${Delight_LIBRARIES} PATH )
@@ -79,5 +77,13 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS( "Delight" DEFAULT_MSG
   Delight_INCLUDE_DIR
   Delight_COMPILE_FLAGS
   Delight_LIBRARIES
-  Delight_LIBRARY_DIR
-  )
+  Delight_LIBRARY_DIR )
+
+SET( Delight_VERSION "" )
+IF( DELIGHT_FOUND )
+  TRY_RUN(DELIGHT_VERSION_EXITCODE DELIGHT_VERSION_COMPILED
+    ${CMAKE_BINARY_DIR} ${CMAKE_MODULE_PATH}/TestForRmanVersion.cxx
+    RUN_OUTPUT_VARIABLE Delight_VERSION
+    ARGS ${Delight_LIBRARIES})
+  message(STATUS "Delight Version: ${Delight_VERSION}")
+ENDIF()

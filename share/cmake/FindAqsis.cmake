@@ -59,26 +59,19 @@
 # our includes
 FIND_PATH( Aqsis_ROOT_INCLUDE_DIR aqsis
   $ENV{AQSISHOME}/include
-  ${Aqsis_INSTALL_PATH}/include
-  )
+  ${Aqsis_INSTALL_PATH}/include )
 FIND_PATH( Aqsis_RI_INCLUDE_DIR ri.h
   $ENV{AQSISHOME}/include/aqsis/ri
-  ${Aqsis_INSTALL_PATH}/include/aqsis/ri
-  )
+  ${Aqsis_INSTALL_PATH}/include/aqsis/ri )
 SET( Aqsis_INCLUDE_DIR ${Aqsis_ROOT_INCLUDE_DIR} ${Aqsis_RI_INCLUDE_DIR} )
 
 # our compilation flags
 SET( Aqsis_COMPILE_FLAGS "-DAQSIS" )
 
 # our library itself
-# 
-FIND_LIBRARY( Aqsis_LIBRARIES
-  NAMES
-  aqsis_slxargs
-  PATHS
+FIND_LIBRARY( Aqsis_LIBRARIES aqsis_slxargs
   $ENV{AQSISHOME}/lib
-  ${Aqsis_INSTALL_PATH}/lib
-  )
+  ${Aqsis_INSTALL_PATH}/lib )
 
 # our library path
 GET_FILENAME_COMPONENT( Aqsis_LIBRARY_DIR ${Aqsis_LIBRARIES} PATH )
@@ -89,5 +82,14 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS( "Aqsis" DEFAULT_MSG
   Aqsis_INCLUDE_DIR
   Aqsis_COMPILE_FLAGS
   Aqsis_LIBRARIES
-  Aqsis_LIBRARY_DIR
-  )
+  Aqsis_LIBRARY_DIR )
+
+SET( Aqsis_VERSION "" )
+# TODO: get Aqsis to support RxRendererInfo so this works
+#IF( AQSIS_FOUND )
+#  TRY_RUN(AQSIS_VERSION_EXITCODE AQSIS_VERSION_COMPILED
+#    ${CMAKE_BINARY_DIR} ${CMAKE_MODULE_PATH}/TestForRmanVersion.cxx
+#    RUN_OUTPUT_VARIABLE Aqsis_VERSION
+#    ARGS ${Aqsis_LIBRARIES})
+#  message(STATUS "Aqsis Version: ${Delight_VERSION}")
+#ENDIF()
