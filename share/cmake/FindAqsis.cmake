@@ -84,12 +84,13 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS( "Aqsis" DEFAULT_MSG
   Aqsis_LIBRARIES
   Aqsis_LIBRARY_DIR )
 
-SET( Aqsis_VERSION "" )
+SET( Aqsis_VERSION "1.6" )
 # TODO: get Aqsis to support RxRendererInfo so this works
 #IF( AQSIS_FOUND )
 #  TRY_RUN(AQSIS_VERSION_EXITCODE AQSIS_VERSION_COMPILED
 #    ${CMAKE_BINARY_DIR} ${CMAKE_MODULE_PATH}/TestForRmanVersion.cxx
 #    RUN_OUTPUT_VARIABLE Aqsis_VERSION
 #    ARGS ${Aqsis_LIBRARIES})
-#  message(STATUS "Aqsis Version: ${Delight_VERSION}")
+#  string(REGEX MATCH "^[^.]*.[^.]*" Aqsis_VERSION ${Aqsis_VERSION})
+#  message(STATUS "Aqsis Version: ${Aqsis_VERSION}")
 #ENDIF()

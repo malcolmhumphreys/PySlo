@@ -31,7 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string>
 #include <iostream>
 #include <Python.h>
-#include "slo.h"
+#include <slo.h>
 
 static const std::string
 PyRmanType() {

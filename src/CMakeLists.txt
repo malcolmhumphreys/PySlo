@@ -31,7 +31,7 @@ include_directories (${PYTHON_INCLUDE_PATH})
 set (python_srcs PySloModule.cpp)
 
 foreach (RMAN ${RMAN_TARGETS})
-    set (RMAN_TARGET __${RMAN}__)
+    set (RMAN_TARGET __${RMAN}-${${RMAN}_VERSION}__)
     add_library (${RMAN_TARGET} SHARED ${python_srcs})
     target_link_libraries (${RMAN_TARGET}
         ${PYTHON_LIBRARIES}

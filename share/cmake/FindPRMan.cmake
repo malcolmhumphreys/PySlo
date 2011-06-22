@@ -80,5 +80,6 @@ IF( PRMAN_FOUND )
     ${CMAKE_BINARY_DIR} ${CMAKE_MODULE_PATH}/TestForRmanVersion.cxx
     RUN_OUTPUT_VARIABLE PRMan_VERSION
     ARGS ${PRMan_LIBRARIES})
+  string(REGEX MATCH "^[^.]*.[^.]*" PRMan_VERSION ${PRMan_VERSION})
   message(STATUS "PRMan Version: ${PRMan_VERSION}")
 ENDIF()

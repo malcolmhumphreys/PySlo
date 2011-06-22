@@ -85,5 +85,6 @@ IF( DELIGHT_FOUND )
     ${CMAKE_BINARY_DIR} ${CMAKE_MODULE_PATH}/TestForRmanVersion.cxx
     RUN_OUTPUT_VARIABLE Delight_VERSION
     ARGS ${Delight_LIBRARIES})
+  string(REGEX MATCH "^[^.]*.[^.]*" Delight_VERSION ${Delight_VERSION})
   message(STATUS "Delight Version: ${Delight_VERSION}")
 ENDIF()
