@@ -57,16 +57,16 @@
 
 # our includes
 FIND_PATH( Delight_INCLUDE_DIR ri.h
-  $ENV{DELIGHT}/include
-  ${Delight_INSTALL_PATH}/include )
+  ${Delight_INSTALL_PATH}/include
+  $ENV{DELIGHT}/include )
 
 # our compilation flags
 SET( Delight_COMPILE_FLAGS "-DDELIGHT" )
 
 # our library itself
 FIND_LIBRARY( Delight_LIBRARIES 3delight
-  $ENV{DELIGHT}/lib
-  ${Delight_INSTALL_PATH}/lib )
+  ${Delight_INSTALL_PATH}/lib
+  $ENV{DELIGHT}/lib )
 
 # our library path
 GET_FILENAME_COMPONENT( Delight_LIBRARY_DIR ${Delight_LIBRARIES} PATH )
@@ -79,12 +79,17 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS( "Delight" DEFAULT_MSG
   Delight_LIBRARIES
   Delight_LIBRARY_DIR )
 
-SET( Delight_VERSION "" )
+SET( Delight_VERSION "0.0.0" )
+SET( Delight_ABI "0.0" )
 IF( DELIGHT_FOUND )
   TRY_RUN(DELIGHT_VERSION_EXITCODE DELIGHT_VERSION_COMPILED
     ${CMAKE_BINARY_DIR} ${CMAKE_MODULE_PATH}/TestForRmanVersion.cxx
+    CMAKE_FLAGS "-DLINK_LIBRARIES:STRING=dl"
     RUN_OUTPUT_VARIABLE Delight_VERSION
     ARGS ${Delight_LIBRARIES})
-  string(REGEX MATCH "^[^.]*.[^.]*" Delight_VERSION ${Delight_VERSION})
-  message(STATUS "Delight Version: ${Delight_VERSION}")
+  IF(DELIGHT_VERSION_COMPILED)
+    string(REGEX MATCH "^[^.]*.[^.]*" Delight_ABI ${Delight_VERSION})
+    string(REPLACE "." "_" Delight_ABI ${Delight_ABI})
+    message(STATUS "Delight ABI: ${Delight_ABI} Version: ${Delight_VERSION}")
+  ENDIF()
 ENDIF()
