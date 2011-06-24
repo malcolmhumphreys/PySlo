@@ -28,17 +28,63 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
+import os
 import os.path
+import sys
+import platform
+import GetRmanInfo
 
 __binding__ = None
 __searchpath__ = None
 __loaded_shader__ = None
-__rman_map__ = {"PRMan": ".slo", "Delight": ".sdl", "Aqsis": ".slx"}
+__rman_modules__ = { }
+__dso_suffix__ = ".dso"
+if platform.system() == "Darwin":
+  __dso_suffix__ = ".dylib"
+else:
+  raise Exception("PySlo doesn't support platform %s" % str(platform.system()))
 
 # enum
 TYPE = None
 STORAGE = None
 DETAIL = None
+
+def __setup_binding__(rootpath, rman, rmanext, renderer, libname):
+  global __rman_modules__
+  __rman_modules__[rmanext] = { "rman": rman, "module": None, "loadable": False }
+  if rootpath != None:
+    lib = os.path.join(rootpath, "lib", "%s%s" % (libname, __dso_suffix__))
+    if not os.path.exists(lib):
+      return False
+    info = None
+    try:
+      info = GetRmanInfo.get_renderer_info(lib)
+    except:
+      return False
+    if info != None:
+      if info["renderer"] == renderer:
+        abi = info["versionstring"].split('.')
+        abi = "%s.%s" % (abi[0], abi[1])
+        modulename = "PySlo.%s%s" % (rman, abi.replace(".", "_"))
+        try:
+          __test_import = __import__(modulename)
+          del __test_import
+          __rman_modules__[rmanext]["module"] = modulename
+          __rman_modules__[rmanext]["loadable"] = True
+          return True
+        except:
+          return False
+  return False
+
+# setup the bindings
+__setup_binding__(os.getenv('RMANTREE', None), "PRMan", ".slo",
+                  "PhotoRealistic-RenderMan", "libprman")
+__setup_binding__(os.getenv('DELIGHT', None), "Delight", ".sdl",
+                  "3Delight", "lib3delight")
+__setup_binding__(os.getenv('AQSISHOME', None), "Aqsis", ".slx",
+                  "Aqsis", "libaqsis")
+
+###############################################################################
 
 def setPath(searchpath = ".:&"):
   global __searchpath__
@@ -49,32 +95,25 @@ def getPath():
   return __searchpath__
 
 def setShader(shader = None):
-  global __binding__, __searchpath__, __loaded_shader__, __rman_map__
+  global __binding__, __searchpath__, __loaded_shader__, __rman_modules__
   global TYPE, STORAGE, DETAIL
   # get the extension of the shader
   basename, ext = os.path.splitext(str(shader))
   # unload current binding if it does not match shader type
   if __binding__ != None:
-    if __rman_map__[__binding__.rmanType()] != ext:
+    if ext != __rman_modules__[ext]["rman"]:
       del __binding__
       __binding__ = None
   # load binding if we haven't allready
   if __binding__ == None:
-    if ext == __rman_map__["PRMan"]:
+    if ext in __rman_modules__.keys():
+      if not __rman_modules__[ext]["loadable"]:
+        raise Exception('binding for %s not compiled' % __rman_modules__[ext]["rman"])
       try:
-        import __PRMan__ as __binding__
+        __import__(__rman_modules__[ext]["module"])
+        __binding__ = sys.modules[__rman_modules__[ext]["module"]]
       except ImportError:
-        raise Exception('binding for %s not compiled' % 'PRMan')
-    elif ext == __rman_map__["Delight"]:
-      try:
-        import __Delight__ as __binding__
-      except ImportError:
-        raise Exception('binding for %s not compiled' % 'Delight')
-    elif ext == __rman_map__["Aqsis"]:
-      try:
-        import __Aqsis__ as __binding__
-      except ImportError:
-        raise Exception('binding for %s not compiled' % 'Aqsis')
+        raise Exception('could not import module %s' % __rman_modules__[ext]["module"])
     else:
       raise Exception('unsupported shader type %s' % ext)
     # update the enum pointers
