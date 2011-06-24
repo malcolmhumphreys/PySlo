@@ -61,7 +61,7 @@ FIND_PATH( Delight_INCLUDE_DIR ri.h
   $ENV{DELIGHT}/include )
 
 # our compilation flags
-SET( Delight_COMPILE_FLAGS "-DDELIGHT" )
+SET( Delight_COMPILE_FLAGS "-DDELIGHT -I${Delight_INCLUDE_DIR}" )
 
 # our library itself
 FIND_LIBRARY( Delight_LIBRARIES 3delight

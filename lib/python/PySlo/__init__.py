@@ -38,8 +38,10 @@ __binding__ = None
 __searchpath__ = None
 __loaded_shader__ = None
 __rman_modules__ = { }
-__dso_suffix__ = ".dso"
-if platform.system() == "Darwin":
+__dso_suffix__ = None
+if platform.system() == "Linux":
+  __dso_suffix__ = ".so"
+elif platform.system() == "Darwin":
   __dso_suffix__ = ".dylib"
 else:
   raise Exception("PySlo doesn't support platform %s" % str(platform.system()))

@@ -66,7 +66,7 @@ FIND_PATH( Aqsis_RI_INCLUDE_DIR ri.h
 SET( Aqsis_INCLUDE_DIR ${Aqsis_ROOT_INCLUDE_DIR} ${Aqsis_RI_INCLUDE_DIR} )
 
 # our compilation flags
-SET( Aqsis_COMPILE_FLAGS "-DAQSIS" )
+SET( Aqsis_COMPILE_FLAGS "-DAQSIS -I${Aqsis_ROOT_INCLUDE_DIR} -I${Aqsis_RI_INCLUDE_DIR}" )
 
 # our library itself
 FIND_LIBRARY( Aqsis_LIBRARIES aqsis_slxargs
