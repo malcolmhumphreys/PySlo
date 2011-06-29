@@ -1,12 +1,6 @@
 
 set(RMAN_TARGETS)
 
-find_package(PythonLibs ${PYTHON_VERSION} REQUIRED)
-message(STATUS "Python found ${PYTHONLIBS_FOUND} ")
-message(STATUS "Python include dirs ${PYTHON_INCLUDE_PATH}")
-message(STATUS "Python libraries ${PYTHON_LIBRARIES}")
-include_directories(${PYTHON_INCLUDE_PATH})
-
 find_package(PRMan)
 if(PRMAN_FOUND)
   set(RMAN_TARGETS ${RMAN_TARGETS} PRMan)
@@ -33,9 +27,10 @@ add_library(GetRmanInfo SHARED PySloGetRmanInfo.cpp)
 target_link_libraries(GetRmanInfo ${CMAKE_DL_LIBS})
 set_target_properties(GetRmanInfo PROPERTIES
   OUTPUT_NAME "GetRmanInfo"
+  LIBRARY_OUTPUT_DIRECTORY "BuildGetRmanInfoPy${VFXPython_VERSION}"
   PREFIX "" SUFFIX ".so")
 install(TARGETS GetRmanInfo
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/python/PySlo)
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/python${VFXPython_VERSION}/PySlo)
 
 foreach(RMAN ${RMAN_TARGETS})
   set(RMAN_TARGET ${RMAN}${${RMAN}_ABI})
@@ -45,14 +40,15 @@ foreach(RMAN ${RMAN_TARGETS})
     ${CMAKE_DL_LIBS})
   set_target_properties(${RMAN_TARGET} PROPERTIES
     OUTPUT_NAME __${RMAN}__
+    LIBRARY_OUTPUT_DIRECTORY "Build${RMAN}${${RMAN}_ABI}Py${VFXPython_VERSION}"
     PREFIX "" SUFFIX ".so"
     COMPILE_FLAGS ${${RMAN}_COMPILE_FLAGS}
     INSTALL_RPATH ${${RMAN}_LIBRARY_DIR})
   install(TARGETS ${RMAN_TARGET}
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/python/PySlo/${RMAN_TARGET})
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/python${VFXPython_VERSION}/PySlo/${RMAN_TARGET})
   configure_file(${CMAKE_SOURCE_DIR}/src/__init__.py.in
     ${CMAKE_CURRENT_BINARY_DIR}/${RMAN}__init__.py @ONLY)
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${RMAN}__init__.py
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/python/PySlo/${RMAN_TARGET}
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/python${VFXPython_VERSION}/PySlo/${RMAN_TARGET}
     RENAME __init__.py)
 endforeach()
